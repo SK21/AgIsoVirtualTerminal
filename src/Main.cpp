@@ -6,6 +6,7 @@
 #include "isobus/hardware_integration/available_can_drivers.hpp"
 
 #include "Main.hpp"
+#include "slcan_interface.hpp"
 #include "Settings.hpp"
 #include "git.h"
 
@@ -27,6 +28,7 @@ AgISOVirtualTerminalApplication::MainWindow::MainWindow(juce::String name,
 #endif
 	canDrivers.push_back(std::make_shared<isobus::TouCANPlugin>(static_cast<std::int16_t>(0), 0));
 	canDrivers.push_back(std::make_shared<isobus::SysTecWindowsPlugin>());
+	canDrivers.push_back(std::make_shared<aog::SLCANInterface>("COM7", 115200, 250000));
 #elif defined(JUCE_MAC)
 	canDrivers.push_back(std::make_shared<isobus::MacCANPCANPlugin>(PCAN_USBBUS1));
 #else

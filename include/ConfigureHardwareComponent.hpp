@@ -28,6 +28,7 @@ private:
 	ComboBox hardwareInterfaceSelector;
 	TextEditor socketCANNameEditor;
 	TextEditor touCANSerialEditor;
+	TextEditor slcanPortEditor;
 	TextButton okButton;
 	std::vector<std::shared_ptr<isobus::CANHardwarePlugin>> &parentCANDrivers;
 

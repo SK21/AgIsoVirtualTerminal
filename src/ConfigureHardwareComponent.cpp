@@ -12,6 +12,7 @@
 
 #ifdef JUCE_WINDOWS
 #include "isobus/hardware_integration/toucan_vscp_canal.hpp"
+#include "slcan_interface.hpp"
 #elif JUCE_LINUX
 #include "isobus/hardware_integration/socket_can_interface.hpp"
 #endif
@@ -30,9 +31,9 @@ ConfigureHardwareComponent::ConfigureHardwareComponent(ConfigureHardwareWindow &
 	hardwareInterfaceSelector.setTextWhenNothingSelected("Select Hardware Interface");
 
 #ifdef ISOBUS_WINDOWSINNOMAKERUSB2CAN_AVAILABLE
-	hardwareInterfaceSelector.addItemList({ "PEAK PCAN USB", "Innomaker2CAN", "TouCAN", "SysTec" }, 1);
+	hardwareInterfaceSelector.addItemList({ "PEAK PCAN USB", "Innomaker2CAN", "TouCAN", "SysTec", "SLCAN" }, 1);
 #else
-	hardwareInterfaceSelector.addItemList({ "PEAK PCAN USB", "Innomaker2CAN (not supported with mingw)", "TouCAN", "SysTec" }, 1);
+	hardwareInterfaceSelector.addItemList({ "PEAK PCAN USB", "Innomaker2CAN (not supported with mingw)", "TouCAN", "SysTec", "SLCAN" }, 1);
 #endif
 	int selectedID = 1;
 
@@ -49,14 +50,8 @@ ConfigureHardwareComponent::ConfigureHardwareComponent(ConfigureHardwareWindow &
 	hardwareInterfaceSelector.setSize(getWidth() - 20, 30);
 	hardwareInterfaceSelector.setTopLeftPosition(10, 80);
 	hardwareInterfaceSelector.onChange = [this]() {
-		if (3 == hardwareInterfaceSelector.getSelectedId())
-		{
-			touCANSerialEditor.setVisible(true);
-		}
-		else
-		{
-			touCANSerialEditor.setVisible(false);
-		}
+		touCANSerialEditor.setVisible(3 == hardwareInterfaceSelector.getSelectedId());
+		slcanPortEditor.setVisible(5 == hardwareInterfaceSelector.getSelectedId());
 		repaint();
 	};
 	addAndMakeVisible(hardwareInterfaceSelector);
@@ -68,6 +63,12 @@ ConfigureHardwareComponent::ConfigureHardwareComponent(ConfigureHardwareWindow &
 	touCANSerialEditor.setTopLeftPosition(10, 140);
 	touCANSerialEditor.setInputFilter(inputFilter, true);
 	addChildComponent(touCANSerialEditor);
+
+	slcanPortEditor.setName("SLCAN COM Port");
+	slcanPortEditor.setText("COM7");
+	slcanPortEditor.setSize(getWidth() - 20, 30);
+	slcanPortEditor.setTopLeftPosition(10, 140);
+	addChildComponent(slcanPortEditor);
 #elif JUCE_LINUX
 	socketCANNameEditor.setName("SocketCAN Interface Name");
 	socketCANNameEditor.setText(std::static_pointer_cast<isobus::SocketCANInterface>(parentCANDrivers.at(0))->get_device_name());
@@ -83,6 +84,12 @@ ConfigureHardwareComponent::ConfigureHardwareComponent(ConfigureHardwareWindow &
 		{
 			int serial = touCANSerialEditor.getText().trim().getIntValue();
 			std::static_pointer_cast<isobus::TouCANPlugin>(parentCANDrivers.at(hardwareInterfaceSelector.getSelectedId() - 1))->reconfigure(0, static_cast<std::uint32_t>(serial));
+		}
+
+		if (5 == hardwareInterfaceSelector.getSelectedId()) // SLCAN
+		{
+			auto port = slcanPortEditor.getText().toStdString();
+			std::static_pointer_cast<aog::SLCANInterface>(parentCANDrivers.at(4))->set_port_name(port);
 		}
 
 		if (nullptr != isobus::CANHardwareInterface::get_assigned_can_channel_frame_handler(0))
@@ -119,6 +126,10 @@ void ConfigureHardwareComponent::paint(Graphics &graphics)
 	if (3 == hardwareInterfaceSelector.getSelectedId())
 	{
 		graphics.drawFittedText("TouCAN Serial Number", touCANSerialEditor.getBounds().getX(), touCANSerialEditor.getBounds().getY() - 14, touCANSerialEditor.getBounds().getWidth(), 12, Justification::centredLeft, 1);
+	}
+	else if (5 == hardwareInterfaceSelector.getSelectedId())
+	{
+		graphics.drawFittedText("COM Port", slcanPortEditor.getBounds().getX(), slcanPortEditor.getBounds().getY() - 14, slcanPortEditor.getBounds().getWidth(), 12, Justification::centredLeft, 1);
 	}
 #elif JUCE_LINUX
 	graphics.drawFittedText("Socket CAN Interface Name", socketCANNameEditor.getBounds().getX(), socketCANNameEditor.getBounds().getY() - 14, socketCANNameEditor.getBounds().getWidth(), 12, Justification::centredLeft, 1);
