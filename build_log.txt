@@ -1,0 +1,27 @@
+**********************************************************************
+** Visual Studio 2026 Developer Command Prompt v18.0
+** Copyright (c) 2025 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+VCVARS_OK
+
+Microsoft (R) Program Maintenance Utility Version 14.50.35724.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+[  2%] Built target AgISOVirtualTerminal_rc_lib
+[  6%] Built target Utility
+[  6%] Building CXX object _deps/can_stack-build/isobus/CMakeFiles/Isobus.dir/src/isobus_virtual_terminal_server.cpp.obj
+isobus_virtual_terminal_server.cpp
+[  7%] Linking CXX static library Isobus.lib
+[ 42%] Built target Isobus
+[ 48%] Built target HardwareIntegration
+[ 49%] Checking the git repository for changes...
+[ 49%] Built target check_git
+[ 51%] Built target cmake_git_version_tracking
+[ 52%] Linking CXX executable AgISOVirtualTerminal_artefacts\Release\AgISOVirtualTerminal.exe
+Copying PCANBasic.dll to the build directory
+Copying Usbcan64.dll to the build directory
+Copying canal.dll to the build directory
+Copying InnoMakerUsb2CanLib.dll to the build directory
+[100%] Built target AgISOVirtualTerminal
+BUILD_OK
